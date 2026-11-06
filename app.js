@@ -560,8 +560,8 @@
     const where = saveMode === 'photos' ? 'Photos' : 'Gallery';
     els.saveAllBtn.hidden = false;
     els.saveAllBtn.textContent = `Save all to ${where}`;
-    els.zipBtn.classList.remove('primary');
-    els.zipBtn.textContent = 'Download .zip';
+    // Phones get a single save button; ZIPs don't show up in photo apps.
+    els.zipBtn.hidden = true;
     els.viewerDownload.textContent = `Save to ${where}`;
     els.viewerDownload.classList.add('primary');
     els.saveHint.textContent = saveMode === 'photos'
@@ -571,7 +571,7 @@
   }
   // A separate Share button is only needed where Save isn't already sharing.
   const showShare = useShare && saveMode !== 'photos';
-  els.shareAllBtn.hidden = !showShare;
+  els.shareAllBtn.hidden = !showShare || saveMode !== 'download';
   els.viewerShare.hidden = !showShare;
 
   /* ---------- Upload UI ---------- */
