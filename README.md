@@ -20,7 +20,9 @@ Example: a 3840×2160 image split into 3 parts horizontally gives three 1280×21
 ### Mobile (iOS & Android)
 
 - Responsive layout with large touch targets, −/+ steppers and a numeric keypad for part counts.
-- **Share…** buttons open the system share sheet, so you can save parts straight to Photos (iOS) or Gallery (Android).
+- **Save all to Photos** (iOS) opens the share sheet. Tap “Save Images” to add the parts to the Photos app. Websites can't write to the photo library directly, so this one confirmation tap is required by iOS.
+- **Save all to Gallery** (Android) saves each part as its own PNG. Gallery apps (Google Photos, Samsung Gallery) show them in the “Download” album. A **Share…** button is also available.
+- The ZIP download is still available as a secondary option. ZIP files don't appear in photo apps.
 - Full-screen viewer with swipe left/right between parts.
 - Previews are built from a downscaled copy, and full-resolution parts are created one at a time only when exporting. This keeps memory use low enough for iOS Safari's canvas limits.
 - Respects notches and safe areas, and inputs don't trigger iOS auto-zoom.

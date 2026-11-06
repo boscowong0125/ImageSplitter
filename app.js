@@ -20,6 +20,14 @@
     } catch (_) { return false; }
   })();
   const useShare = canShareFiles && isTouch;
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  // How "save" works on this device:
+  //  'photos'   iOS: share sheet, where "Save N Images" adds them to Photos
+  //             (websites can't write to the photo library directly).
+  //  'gallery'  Android: individual PNG downloads, which gallery apps show
+  //             in their "Download" album.
+  //  'download' Desktop: regular downloads.
+  const saveMode = isIOS && canShareFiles ? 'photos' : (isAndroid && isTouch ? 'gallery' : 'download');
 
   const $ = (id) => document.getElementById(id);
   const els = {
@@ -28,7 +36,7 @@
     cols: $('cols'), rows: $('rows'), colsField: $('colsField'), rowsField: $('rowsField'),
     showLines: $('showLines'), summary: $('summary'), warning: $('warning'),
     sourceImg: $('sourceImg'), guides: $('guides'),
-    prefix: $('prefix'), zipBtn: $('zipBtn'), shareAllBtn: $('shareAllBtn'), tiles: $('tiles'),
+    prefix: $('prefix'), zipBtn: $('zipBtn'), saveAllBtn: $('saveAllBtn'), saveHint: $('saveHint'), shareAllBtn: $('shareAllBtn'), tiles: $('tiles'),
     viewer: $('viewer'), viewerTitle: $('viewerTitle'), viewerImg: $('viewerImg'),
     viewerBody: $('viewerBody'), viewerPrev: $('viewerPrev'), viewerNext: $('viewerNext'),
     viewerShare: $('viewerShare'), viewerDownload: $('viewerDownload'), viewerClose: $('viewerClose'),
@@ -219,8 +227,8 @@
         info.innerHTML = `#${i + 1}<span class="dims"> · ${w}×${h}</span>`;
         const dl = document.createElement('button');
         dl.textContent = 'Save';
-        dl.title = 'Download this part';
-        dl.addEventListener('click', () => downloadTile(tile));
+        dl.title = saveMode === 'photos' ? 'Save this part to Photos' : 'Download this part';
+        dl.addEventListener('click', () => saveParts([tile], dl));
         meta.append(info, dl);
         el.append(thumb, meta);
         frag.append(el);
@@ -233,7 +241,7 @@
 
     // When sharing is available, pre-encode in the background so the share
     // sheet can open straight from a tap (browsers require a recent gesture).
-    if (useShare) setTimeout(() => preEncode(gen), 600);
+    if (isTouch) setTimeout(() => preEncode(gen), 600);
   }
 
   function clearTiles() {
@@ -250,6 +258,7 @@
   function setExportEnabled(on) {
     els.zipBtn.disabled = !on;
     els.shareAllBtn.disabled = !on;
+    els.saveAllBtn.disabled = !on;
   }
 
   function updateGuides(cols, rows) {
@@ -324,6 +333,26 @@
     } catch (e) {
       toast(e.message);
     }
+  }
+
+  // Save parts the best way for this device (see saveMode).
+  async function saveParts(tiles, btn) {
+    if (!tiles.length) return;
+    if (saveMode === 'photos') return share(tiles, btn);
+    if (tiles.length === 1) return downloadTile(tiles[0]);
+    await withBusy(btn, async (progress) => {
+      try {
+        for (let i = 0; i < tiles.length; i++) {
+          progress(`Saving ${i + 1}/${tiles.length}…`);
+          saveBlob(await getBlob(tiles[i]), tiles[i].name);
+          // Space out downloads so the browser doesn't drop any.
+          await new Promise((r) => setTimeout(r, 400));
+        }
+        if (saveMode === 'gallery') toast(`Saved ${tiles.length} images. Find them in your gallery's Download album.`);
+      } catch (e) {
+        toast(e.message);
+      }
+    });
   }
 
   async function withBusy(btn, fn) {
@@ -436,7 +465,7 @@
   els.viewerNext.addEventListener('click', () => step(1));
   els.viewerDownload.addEventListener('click', () => {
     const t = state.tiles[state.viewerIndex];
-    if (t) downloadTile(t);
+    if (t) saveParts([t], els.viewerDownload);
   });
   els.viewerShare.addEventListener('click', () => {
     const t = state.tiles[state.viewerIndex];
@@ -523,8 +552,27 @@
   });
   els.zipBtn.addEventListener('click', downloadZip);
   els.shareAllBtn.addEventListener('click', () => share(state.tiles, els.shareAllBtn));
-  els.shareAllBtn.hidden = !useShare;
-  els.viewerShare.hidden = !useShare;
+  els.saveAllBtn.addEventListener('click', () => saveParts(state.tiles, els.saveAllBtn));
+
+  // On phones, saving to the photo album is the main action and the ZIP
+  // becomes secondary (ZIP files don't show up in photo apps).
+  if (saveMode !== 'download') {
+    const where = saveMode === 'photos' ? 'Photos' : 'Gallery';
+    els.saveAllBtn.hidden = false;
+    els.saveAllBtn.textContent = `Save all to ${where}`;
+    els.zipBtn.classList.remove('primary');
+    els.zipBtn.textContent = 'Download .zip';
+    els.viewerDownload.textContent = `Save to ${where}`;
+    els.viewerDownload.classList.add('primary');
+    els.saveHint.textContent = saveMode === 'photos'
+      ? 'Opens the share sheet. Tap “Save Images” to add them to Photos.'
+      : 'Each part is saved as a PNG. Find them in your gallery’s Download album.';
+    els.saveHint.hidden = false;
+  }
+  // A separate Share button is only needed where Save isn't already sharing.
+  const showShare = useShare && saveMode !== 'photos';
+  els.shareAllBtn.hidden = !showShare;
+  els.viewerShare.hidden = !showShare;
 
   /* ---------- Upload UI ---------- */
 

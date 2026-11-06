@@ -237,6 +237,7 @@ input:focus-visible, button:focus-visible, .dropzone:focus-visible {
 }
 .actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.save-hint { margin: -4px 0 12px; }
 
 .tiles {
   display: grid;
@@ -358,6 +359,7 @@ dialog::backdrop { background: rgba(0,0,0,.6); }
   .actions, .text, .btn-row { width: 100%; }
   .text input { flex: 1; width: auto; min-width: 0; }
   .btn-row button { flex: 1; }
+  .btn-row #saveAllBtn { flex-basis: 100%; }
 
   /* Full-screen viewer */
   dialog {
