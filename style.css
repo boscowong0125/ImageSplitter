@@ -10,21 +10,22 @@
   --warn-bg: #fff6e0;
   --warn-fg: #7a5600;
   --tap: 36px;
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #121212;
-    --fg: #ececec;
-    --muted: #8c8c8c;
-    --line: #2c2c2c;
-    --card: #1b1b1b;
-    --accent: #ececec;
-    --accent-fg: #121212;
-    --warn-bg: #2e2610;
-    --warn-fg: #e8c66a;
-  }
+/* The theme is set on <html data-theme> by a script in <head>: the saved
+   choice, or the system setting if the user hasn't picked one. */
+:root[data-theme="dark"] {
+  --bg: #121212;
+  --fg: #ececec;
+  --muted: #8c8c8c;
+  --line: #2c2c2c;
+  --card: #1b1b1b;
+  --accent: #ececec;
+  --accent-fg: #121212;
+  --warn-bg: #2e2610;
+  --warn-fg: #e8c66a;
+  color-scheme: dark;
 }
 
 /* Larger tap targets on touch screens */
@@ -55,6 +56,26 @@ header, main, footer {
 }
 
 header { padding-top: max(40px, env(safe-area-inset-top)); padding-bottom: 8px; }
+header .title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.theme-toggle {
+  flex: none;
+  width: var(--tap);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-toggle svg { width: 18px; height: 18px; }
+.theme-toggle .moon { display: none; }
+:root[data-theme="dark"] .theme-toggle .sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .moon { display: block; }
+
 h1 { font-size: 1.6rem; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
 h2 { font-size: 1.05rem; font-weight: 600; margin: 0; }
 footer {

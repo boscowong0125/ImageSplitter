@@ -15,7 +15,7 @@ Example: a 3840×2160 image split into 3 parts horizontally gives three 1280×21
 - If the size isn't evenly divisible, the extra pixels are spread so parts differ by at most 1px. No pixels are dropped.
 - Pixels are copied exactly (no resampling, no color conversion). Transparency is preserved.
 - Works offline with no dependencies. Your image never leaves your browser.
-- Light and dark themes follow your system setting.
+- Light and dark themes. The sun/moon button switches between them and remembers your choice. Until you pick one, the page follows your system setting.
 
 ### Mobile (iOS & Android)
 

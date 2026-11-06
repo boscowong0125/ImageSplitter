@@ -40,7 +40,7 @@
     viewer: $('viewer'), viewerTitle: $('viewerTitle'), viewerImg: $('viewerImg'),
     viewerBody: $('viewerBody'), viewerPrev: $('viewerPrev'), viewerNext: $('viewerNext'),
     viewerShare: $('viewerShare'), viewerDownload: $('viewerDownload'), viewerClose: $('viewerClose'),
-    toast: $('toast'),
+    toast: $('toast'), themeToggle: $('themeToggle'),
   };
 
   const state = {
@@ -634,6 +634,34 @@
     while (b >= 1024 && i < u.length - 1) { b /= 1024; i++; }
     return `${b.toFixed(i ? 1 : 0)} ${u[i]}`;
   }
+
+  /* ---------- Theme ---------- */
+
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  const systemDark = matchMedia('(prefers-color-scheme: dark)');
+
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    const next = theme === 'dark' ? 'light' : 'dark';
+    els.themeToggle.setAttribute('aria-label', `Switch to ${next} mode`);
+    els.themeToggle.title = `Switch to ${next} mode`;
+    themeMeta.content = theme === 'dark' ? '#121212' : '#fafafa';
+  }
+
+  function savedTheme() {
+    try { return localStorage.getItem('theme'); } catch (_) { return null; }
+  }
+
+  els.themeToggle.addEventListener('click', () => {
+    const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('theme', theme); } catch (_) { /* private mode */ }
+    applyTheme(theme);
+  });
+  // Keep following the system setting until the user picks a theme.
+  systemDark.addEventListener('change', (e) => {
+    if (!savedTheme()) applyTheme(e.matches ? 'dark' : 'light');
+  });
+  applyTheme(document.documentElement.dataset.theme || 'light');
 
   setMode('h');
 })();
