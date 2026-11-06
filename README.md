@@ -17,6 +17,14 @@ Example: a 3840×2160 image split into 3 parts horizontally gives three 1280×21
 - Works offline with no dependencies. Your image never leaves your browser.
 - Light and dark themes follow your system setting.
 
+### Mobile (iOS & Android)
+
+- Responsive layout with large touch targets, −/+ steppers and a numeric keypad for part counts.
+- **Share…** buttons open the system share sheet, so you can save parts straight to Photos (iOS) or Gallery (Android).
+- Full-screen viewer with swipe left/right between parts.
+- Previews are built from a downscaled copy, and full-resolution parts are created one at a time only when exporting. This keeps memory use low enough for iOS Safari's canvas limits.
+- Respects notches and safe areas, and inputs don't trigger iOS auto-zoom.
+
 ## Hosting on GitHub Pages
 
 1. Push this repository to GitHub.
