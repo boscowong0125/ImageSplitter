@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Image Splitter</title>
+  <meta name="description" content="Split images into equal parts horizontally, vertically or in a grid. Lossless PNG output. Runs entirely in your browser.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect x='1' y='1' width='6' height='6' rx='1' fill='%23222'/><rect x='9' y='1' width='6' height='6' rx='1' fill='%23222'/><rect x='1' y='9' width='6' height='6' rx='1' fill='%23222'/><rect x='9' y='9' width='6' height='6' rx='1' fill='%23222'/></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Image Splitter</h1>
+    <p class="muted">Split an image into equal parts. Lossless PNG output. Nothing leaves your device.</p>
+  </header>
+
+  <main>
+    <!-- Upload -->
+    <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload an image">
+      <input id="file" type="file" accept="image/*" hidden>
+      <p><strong>Drop an image here</strong>, click to choose, or paste (Ctrl+V)</p>
+      <p class="muted small">PNG, JPEG, WebP, GIF, BMP, AVIF — 4K and larger supported</p>
+    </section>
+
+    <section id="workspace" hidden>
+      <!-- Source info -->
+      <div class="file-info">
+        <span id="fileName" class="filename"></span>
+        <span id="fileDims" class="muted"></span>
+        <button id="changeBtn" class="link">Change image</button>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <div class="seg" role="radiogroup" aria-label="Split direction">
+          <button data-mode="h" class="active" role="radio" aria-checked="true" title="Side-by-side columns">Horizontal</button>
+          <button data-mode="v" role="radio" aria-checked="false" title="Stacked rows">Vertical</button>
+          <button data-mode="grid" role="radio" aria-checked="false" title="Rows and columns">Grid</button>
+        </div>
+
+        <label class="num" id="colsField">
+          <span>Columns</span>
+          <input id="cols" type="number" min="1" max="100" value="3">
+        </label>
+        <label class="num" id="rowsField">
+          <span>Rows</span>
+          <input id="rows" type="number" min="1" max="100" value="1">
+        </label>
+
+        <label class="check">
+          <input id="showLines" type="checkbox" checked>
+          <span>Show guides</span>
+        </label>
+      </div>
+
+      <p id="summary" class="summary"></p>
+      <p id="warning" class="warning" hidden></p>
+
+      <!-- Source preview with guides -->
+      <div class="source-wrap">
+        <div id="source" class="source">
+          <img id="sourceImg" alt="Source image">
+          <svg id="guides" class="guides" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+
+      <!-- Tiles -->
+      <div class="tiles-head">
+        <h2>Parts</h2>
+        <div class="actions">
+          <label class="text">
+            <span class="muted small">File prefix</span>
+            <input id="prefix" type="text" spellcheck="false">
+          </label>
+          <button id="zipBtn" class="primary">Download all (.zip)</button>
+        </div>
+      </div>
+      <div id="tiles" class="tiles"></div>
+    </section>
+  </main>
+
+  <!-- Lightbox -->
+  <dialog id="viewer">
+    <div class="viewer-bar">
+      <span id="viewerTitle"></span>
+      <div>
+        <button id="viewerPrev" aria-label="Previous">&larr;</button>
+        <button id="viewerNext" aria-label="Next">&rarr;</button>
+        <button id="viewerDownload">Download</button>
+        <button id="viewerClose" aria-label="Close">&times;</button>
+      </div>
+    </div>
+    <div class="viewer-body"><img id="viewerImg" alt=""></div>
+  </dialog>
+
+  <footer class="muted small">
+    All processing happens locally in your browser.
+  </footer>
+
+  <script src="zip.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
